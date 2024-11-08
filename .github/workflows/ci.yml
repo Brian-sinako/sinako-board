@@ -1,29 +1,37 @@
-name: Simple CI Pipeline
+name: Node.js CI
 
 on:
   push:
     branches:
       - main
-      - feature/*
+      - develop
+      - 'feature/*'  # Triggers the workflow for any feature branch
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js (if using Node.js)
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Replace with your app's Node version
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install dependencies
+      run: npm install
 
-      - name: Run tests
-        run: npm test
+    - name: Run tests
+      run: npm test
+
+    - name: Build Docker image
+      run: |
+        docker build -t my-app .
+        docker tag my-app:latest your-docker-username/my-app:latest
+        docker push your-docker-username/my-app:latest
